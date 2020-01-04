@@ -27,7 +27,7 @@ namespace IdentityServer4.ResponseHandling
         /// Creates an OpenApiDocument for Swagger
         /// </summary>
         /// <param name="issuerUri">Base URI for IdentityServer</param>
-        public Task<OpenApiDocument> CreateSwaggerDocAsync(string issuerUri)
+        public virtual Task<OpenApiDocument> CreateSwaggerDocAsync(string issuerUri)
         {
             var doc = new OpenApiDocument
             {
@@ -74,6 +74,13 @@ namespace IdentityServer4.ResponseHandling
             return new OpenApiSchema()
             {
                 Type = DataTypes.Object,
+                AdditionalPropertiesAllowed = true,   
+                Required = new HashSet<string>()
+                {
+                    "issuer",
+                    "subject_types_supported",
+                    "code_challenge_methods_supported"
+                },
                 Properties = new Dictionary<string, OpenApiSchema>()
                 {
                     ["issuer"] = new OpenApiSchema()
@@ -116,6 +123,10 @@ namespace IdentityServer4.ResponseHandling
                     {
                         Type = DataTypes.String,
                     },
+                    ["mtls_endpoint_aliases"] = new OpenApiSchema()
+                    {
+                        Type = DataTypes.String,
+                    },
                     ["frontchannel_logout_supported"] = new OpenApiSchema()
                     {
                         Type = DataTypes.Boolean,
@@ -133,6 +144,14 @@ namespace IdentityServer4.ResponseHandling
                         Type = DataTypes.Boolean,
                     },
                     ["request_parameter_supported"] = new OpenApiSchema()
+                    {
+                        Type = DataTypes.Boolean,
+                    },
+                    ["request_uri_parameter_supported"] = new OpenApiSchema()
+                    {
+                        Type = DataTypes.Boolean,
+                    },
+                    ["tls_client_certificate_bound_access_tokens"] = new OpenApiSchema()
                     {
                         Type = DataTypes.Boolean,
                     },

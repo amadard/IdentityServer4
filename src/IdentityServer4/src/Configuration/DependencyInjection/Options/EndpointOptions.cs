@@ -85,5 +85,13 @@ namespace IdentityServer4.Configuration
         /// <c>true</c> if the device authorization endpoint is enabled; otherwise, <c>false</c>.
         /// </value>
         public bool EnableDeviceAuthorizationEndpoint { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the swagger json generator endpoint is enabled.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if the swagger json generator endpoint is enabled; otherwise, <c>false</c>.
+        /// </value>
+        public bool EnableSwaggerGenEndpoint { get; set; } = true;
     }
 }

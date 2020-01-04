@@ -231,6 +231,9 @@ namespace IdentityServer4.ResponseHandling
                             }
                         }
                     },
+                    //TODO - Add Paths for remaining endpoints
+                    //Paths should have external docs linking to docs.identityserver.io
+
                     //Autorize
                     //Token
                     //UserInfo

@@ -205,6 +205,7 @@ namespace IdentityServer4
             public const string EndSession = "Endsession";
             public const string CheckSession = "Checksession";
             public const string UserInfo = "Userinfo";
+            public const string SwaggerGen = "Swagger.json";
         }
 
         public static class ProtocolRoutePaths
@@ -229,6 +230,9 @@ namespace IdentityServer4
             public const string MtlsRevocation          = MtlsPathPrefix + "/revocation";
             public const string MtlsIntrospection       = MtlsPathPrefix + "/introspect";
             public const string MtlsDeviceAuthorization = MtlsPathPrefix + "/deviceauthorization";
+
+            public const string SwaggerGen = "swagger/v1/swagger.json";
+
 
             public static readonly string[] CorsPaths =
             {

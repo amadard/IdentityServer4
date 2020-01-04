@@ -91,6 +91,8 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.AddEndpoint<TokenRevocationEndpoint>(EndpointNames.Revocation, ProtocolRoutePaths.Revocation.EnsureLeadingSlash());
             builder.AddEndpoint<TokenEndpoint>(EndpointNames.Token, ProtocolRoutePaths.Token.EnsureLeadingSlash());
             builder.AddEndpoint<UserInfoEndpoint>(EndpointNames.UserInfo, ProtocolRoutePaths.UserInfo.EnsureLeadingSlash());
+            builder.AddEndpoint<SwaggerGenEndpoint>(EndpointNames.SwaggerGen, ProtocolRoutePaths.SwaggerGen.EnsureLeadingSlash());
+            
 
             return builder;
         }
@@ -232,7 +234,8 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IDiscoveryResponseGenerator, DiscoveryResponseGenerator>();
             builder.Services.TryAddTransient<ITokenRevocationResponseGenerator, TokenRevocationResponseGenerator>();
             builder.Services.TryAddTransient<IDeviceAuthorizationResponseGenerator, DeviceAuthorizationResponseGenerator>();
-
+            builder.Services.TryAddTransient<ISwaggerGenResponseGenerator, SwaggerGenResponseGenerator>();
+            
             return builder;
         }
 

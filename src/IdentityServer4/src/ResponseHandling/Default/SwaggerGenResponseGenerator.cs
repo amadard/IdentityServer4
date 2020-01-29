@@ -37,7 +37,6 @@ namespace IdentityServer4.ResponseHandling
                     Version = "v1",
                     Title = "IdentityServer4",
                     Description = "IdentityServer4 is an OpenID Connect and OAuth 2.0 framework for ASP.NET Core.",
-
                 },
                 Components = new OpenApiComponents()
                 {
@@ -45,6 +44,7 @@ namespace IdentityServer4.ResponseHandling
                     {
                         ["DiscoveryDocument"] = DiscoveryDocumentSchema(),
                         ["AuthorizeResponse"] = AuthorizeRepsonseSchema(),
+                        ["TokenResponse"] = TokenResponseSchema(),
                     }
                 },
                 Servers = new List<OpenApiServer>
@@ -87,7 +87,7 @@ namespace IdentityServer4.ResponseHandling
                 {
                     ["issuer"] = new OpenApiSchema()
                     {
-                        Type = DataTypes.String,
+                        Type = DataTypes.String
                     },
                     ["jwks_uri"] = new OpenApiSchema()
                     {
@@ -323,7 +323,52 @@ namespace IdentityServer4.ResponseHandling
                 }
             };
         }
-
+        /// <summary>
+        /// Returns the <see cref="OpenApiSchema" /> for the Token Endpoint Repsonse
+        /// </summary>
+        public virtual OpenApiSchema TokenResponseSchema()
+        {
+            return new OpenApiSchema()
+            {
+                Type = DataTypes.Object,
+                AdditionalPropertiesAllowed = true,
+                Properties = new Dictionary<string, OpenApiSchema>()
+                {
+                    ["access_token"] = new OpenApiSchema()
+                    {
+                        Type = DataTypes.String,
+                    },
+                    ["expires_in"] = new OpenApiSchema()
+                    {
+                        Type = DataTypes.String,
+                    },
+                    ["token_type"] = new OpenApiSchema()
+                    {
+                        Type = DataTypes.String,
+                    },
+                    ["refresh_token"] = new OpenApiSchema()
+                    {
+                        Type = DataTypes.String,
+                    },
+                    ["id_token"] = new OpenApiSchema()
+                    {
+                        Type = DataTypes.String,
+                    },
+                    ["scope"] = new OpenApiSchema()
+                    {
+                        Type = DataTypes.String,
+                    },
+                    ["error"] = new OpenApiSchema()
+                    {
+                        Type = DataTypes.String,
+                    },
+                    ["error_description"] = new OpenApiSchema()
+                    {
+                        Type = DataTypes.String,
+                    },
+                }
+            };
+        }
         /// <summary>
         /// Returns the <see cref="OpenApiPathItem" /> for the Discovery Endpoint
         /// </summary>
@@ -596,7 +641,6 @@ namespace IdentityServer4.ResponseHandling
             };
             var responseDescription = "Request tokens or authorization codes via the browser";
 
-            //TODO - Reponses
             return new OpenApiPathItem
             {
                 Description = "The authorize endpoint can be used to request tokens or authorization codes via the browser. This process typically involves authentication of the end-user and optionally consent.",
@@ -611,7 +655,7 @@ namespace IdentityServer4.ResponseHandling
                         {
                             ["302"] = new OpenApiResponse
                             {
-                                Description = "OK",                              
+                                Description = "OK",
                             }
                         }
                     },
@@ -654,7 +698,136 @@ namespace IdentityServer4.ResponseHandling
         /// </summary>
         public virtual OpenApiPathItem TokenEndpointPathItem()
         {
-            throw new NotImplementedException();
+            return new OpenApiPathItem
+            {
+                Description = "The token endpoint can be used to programmatically request tokens.",
+                Operations = new Dictionary<OperationType, OpenApiOperation>
+                {
+                    [OperationType.Post] = new OpenApiOperation
+                    {
+                        Description = "The token endpoint can be used to programmatically request tokens.",
+                        ExternalDocs = new OpenApiExternalDocs()
+                        {
+                            Description = "Token Endpoint",
+                            Url = new System.Uri("http://docs.identityserver.io/en/latest/endpoints/token.html")
+                        },
+                        RequestBody = new OpenApiRequestBody()
+                        {
+                            Content =
+                            {
+                                ["application/x-www-form-urlencoded"] = new OpenApiMediaType()
+                                {
+                                    Schema = new OpenApiSchema()
+                                    {
+                                        Properties = new Dictionary<string, OpenApiSchema>()
+                                        {
+                                            ["client_id"] = new OpenApiSchema()
+                                            {
+                                                Type = DataTypes.String,
+                                                Description = "client identifier",
+                                            },
+                                            ["client_secret"] = new OpenApiSchema()
+                                            {
+                                                Type = DataTypes.String,
+                                                Description = "client secret either in the post body, or as a basic authentication header. Optional.",
+                                            },
+                                            ["grant_type"] = new OpenApiSchema()
+                                            {
+                                                Type = DataTypes.String,
+                                                Enum = new List<IOpenApiAny>
+                                                {
+                                                    new OpenApiString("authorization_code"),
+                                                    new OpenApiString("client_credentials"),
+                                                    new OpenApiString("password"),
+                                                    new OpenApiString("refresh_token"),
+                                                    new OpenApiString("urn:ietf:params:oauth:grant-type:device_code"),
+                                                },
+                                                Description = "custom grant types can be added"
+                                            },
+                                            ["scope"] = new OpenApiSchema()
+                                            {
+                                                Type = DataTypes.String,
+                                                Description = "one or more registered scopes. If not specified, a token for all explicitly allowed scopes will be issued.",
+                                            },
+                                            ["redirect_uri"] = new OpenApiSchema()
+                                            {
+                                                Type = DataTypes.String,
+                                                Description = "required for the authorization_code grant type",
+                                            },
+                                            ["code"] = new OpenApiSchema()
+                                            {
+                                                Type = DataTypes.String,
+                                                Description = "the authorization code (required for authorization_code grant type)",
+                                            },
+                                            ["code_verifier"] = new OpenApiSchema()
+                                            {
+                                                Type = DataTypes.String,
+                                                Description = "PKCE proof key",
+                                            },
+                                            ["username"] = new OpenApiSchema()
+                                            {
+                                                Type = DataTypes.String,
+                                                Description = "resource owner username (required for password grant type)",
+                                            },
+                                            ["password"] = new OpenApiSchema()
+                                            {
+                                                Type = DataTypes.String,
+                                                Description = "resource owner password (required for password grant type)",
+                                            },
+                                            ["refresh_token"] = new OpenApiSchema()
+                                            {
+                                                Type = DataTypes.String,
+                                                Description = "the refresh token (required for refresh_token grant type)",
+                                            },
+                                            ["device_code"] = new OpenApiSchema()
+                                            {
+                                                Type = DataTypes.String,
+                                                Description = "the device code (required for urn:ietf:params:oauth:grant-type:device_code grant type)",
+                                            },
+                                            ["acr_values"] = new OpenApiSchema()
+                                            {
+                                                Type = DataTypes.Array,
+                                                Enum = new List<IOpenApiAny>
+                                                {
+                                                    new OpenApiString("idp:name_of_idp"),
+                                                    new OpenApiString("tenant:name_of_tenant "),
+                                                },
+                                                Description = "allows passing in additional authentication related information for the password grant type - identityserver special cases the following proprietary acr_values:",
+                                            },
+                                        },
+
+                                        Required = new HashSet<string>()
+                                        {
+                                            "client_id",
+                                            "client_secret",
+                                            "grant_type"
+                                        },
+
+                                    }
+                                },
+                            },
+                        },
+                        Responses = new OpenApiResponses
+                        {
+                            ["200"] = new OpenApiResponse
+                            {
+                                Description = "OK",
+                                Content = new Dictionary<string, OpenApiMediaType>()
+                                {
+                                    ["application/json"] = new OpenApiMediaType()
+                                    {
+                                        Schema = new OpenApiSchema()
+                                        {
+                                            Reference = new OpenApiReference { Type = ReferenceType.Response, Id = "TokenResponse" }
+                                        }
+                                    },
+                                },
+                            }
+                        }
+
+                    }
+                }
+            };
         }
         /// <summary>
         /// Returns the <see cref="OpenApiPathItem" /> for the UserInfo Endpoint

@@ -44,6 +44,7 @@ namespace IdentityServer4.ResponseHandling
                     Schemas = new Dictionary<string, OpenApiSchema>
                     {
                         ["DiscoveryDocument"] = DiscoveryDocumentSchema(),
+                        ["AuthorizeResponse"] = AuthorizeRepsonseSchema(),
                     }
                 },
                 Servers = new List<OpenApiServer>
@@ -242,6 +243,88 @@ namespace IdentityServer4.ResponseHandling
         }
 
         /// <summary>
+        /// Returns the <see cref="OpenApiSchema" /> for the Authorize Endpoint Repsonse
+        /// </summary>
+        public virtual OpenApiSchema AuthorizeRepsonseSchema()
+        {
+            return new OpenApiSchema()
+            {
+                Type = DataTypes.Object,
+                AdditionalPropertiesAllowed = true,
+                Properties = new Dictionary<string, OpenApiSchema>()
+                {
+                    ["scope"] = new OpenApiSchema()
+                    {
+                        Type = DataTypes.String,
+                    },
+                    ["code"] = new OpenApiSchema()
+                    {
+                        Type = DataTypes.String,
+                    },
+                    ["access_token"] = new OpenApiSchema()
+                    {
+                        Type = DataTypes.String,
+                    },
+                    ["token_endpoint"] = new OpenApiSchema()
+                    {
+                        Type = DataTypes.String,
+                    },
+                    ["expires_in"] = new OpenApiSchema()
+                    {
+                        Type = DataTypes.String,
+                    },
+                    ["token_type"] = new OpenApiSchema()
+                    {
+                        Type = DataTypes.String,
+                    },
+                    ["refresh_token"] = new OpenApiSchema()
+                    {
+                        Type = DataTypes.String,
+                    },
+                    ["id_token"] = new OpenApiSchema()
+                    {
+                        Type = DataTypes.String,
+                    },
+                    ["state"] = new OpenApiSchema()
+                    {
+                        Type = DataTypes.String,
+                    },
+                    ["error"] = new OpenApiSchema()
+                    {
+                        Type = DataTypes.String,
+                        Items = new OpenApiSchema()
+                        {
+                            Type = DataTypes.String,
+                            Enum = new List<IOpenApiAny>
+                            {
+                                new OpenApiString("invalid_request"),
+                                new OpenApiString("unauthorized_client"),
+                                new OpenApiString("access_denied"),
+                                new OpenApiString("unsupported_response_type"),
+                                new OpenApiString("server_error"),
+                                new OpenApiString("temporarily_unavailable"),
+                                new OpenApiString("interaction_required"),
+                                new OpenApiString("login_required"),
+                                new OpenApiString("account_selection_required"),
+                                new OpenApiString("invalid_request_uri"),
+                                new OpenApiString("invalid_request_object"),
+                                new OpenApiString("request_not_supported"),
+                                new OpenApiString("request_uri_not_supported"),
+                                new OpenApiString("registration_not_supported"),
+                                new OpenApiString("invalid_target"),
+                                new OpenApiString("invalid_request"),
+                            }
+                        }
+                    },
+                    ["error_description"] = new OpenApiSchema()
+                    {
+                        Type = DataTypes.String,
+                    },
+                }
+            };
+        }
+
+        /// <summary>
         /// Returns the <see cref="OpenApiPathItem" /> for the Discovery Endpoint
         /// </summary>
         public virtual OpenApiPathItem DiscoveryEndpointPathItem()
@@ -260,7 +343,6 @@ namespace IdentityServer4.ResponseHandling
                             Description = "Discovery Endpoint",
                             Url = new System.Uri("http://docs.identityserver.io/en/latest/endpoints/discovery.html")
                         },
-                        Parameters = new List<OpenApiParameter>(),
                         Responses = new OpenApiResponses
                         {
                             ["200"] = new OpenApiResponse
@@ -388,7 +470,7 @@ namespace IdentityServer4.ResponseHandling
                     Schema = new OpenApiSchema()
                     {
                         Type = DataTypes.String,
-                    },                    
+                    },
                     Description = "identityserver will echo back the state value on the token response, this is for round tripping state between client and provider, correlating request and response and CSRF/replay protection. (recommended)",
                 },
                 new OpenApiParameter()
@@ -486,7 +568,7 @@ namespace IdentityServer4.ResponseHandling
                             new OpenApiString("idp:name_of_idp"),
                             new OpenApiString("tenant:name_of_tenant "),
                         },
-                        
+
                     },
                     Description = "allows passing in additional authentication related information - identityserver special cases the following proprietary acr_values:",
                 },
@@ -524,7 +606,14 @@ namespace IdentityServer4.ResponseHandling
                     {
                         Description = responseDescription,
                         ExternalDocs = responseExernalDoc,
-                        Parameters = queryParameters
+                        Parameters = queryParameters,
+                        Responses = new OpenApiResponses
+                        {
+                            ["302"] = new OpenApiResponse
+                            {
+                                Description = "OK",                              
+                            }
+                        }
                     },
                     [OperationType.Post] = new OpenApiOperation
                     {
@@ -537,7 +626,25 @@ namespace IdentityServer4.ResponseHandling
                                 ["application/x-www-form-urlencoded"] = body,
                                 ["multipart/form-data"] = body,
                             },
+                        },
+                        Responses = new OpenApiResponses
+                        {
+                            ["200"] = new OpenApiResponse
+                            {
+                                Description = "OK",
+                                Content = new Dictionary<string, OpenApiMediaType>()
+                                {
+                                    ["application/json"] = new OpenApiMediaType()
+                                    {
+                                        Schema = new OpenApiSchema()
+                                        {
+                                            Reference = new OpenApiReference { Type = ReferenceType.Response, Id = "AuthorizeResponse" }
+                                        }
+                                    },
+                                },
+                            }
                         }
+
                     }
                 }
             };
